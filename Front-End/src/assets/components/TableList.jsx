@@ -7,6 +7,7 @@ const clients = [
     job: "Quality Control Specialist",
     favoriteColor: "Blue",
     Rate: "53",
+    isActive: true,
   },
   {
     id: 2,
@@ -14,6 +15,7 @@ const clients = [
     job: "Desktop Support Technician",
     favoriteColor: "Purple",
     Rate: "48",
+    isActive: true,
   },
   {
     id: 3,
@@ -21,9 +23,10 @@ const clients = [
     job: "Tax Accountant",
     favoriteColor: "Red",
     Rate: "47",
+    isActive: false,
   },
 ];
-function TableList({onUpdate}) {
+function TableList({ onUpdate }) {
   return (
     <div className="overflow-x-auto mt-10">
       <table className="table">
