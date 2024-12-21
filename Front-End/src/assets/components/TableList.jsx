@@ -36,9 +36,8 @@ function TableList({ onUpdate }) {
             <th></th>
             <th>Name</th>
             <th>Job</th>
-            <th>Favorite Color</th>
-            <th>Rate</th>
-            
+           
+            <th>Stats</th>
           </tr>
         </thead>
         <tbody>
