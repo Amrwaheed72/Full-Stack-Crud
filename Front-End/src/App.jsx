@@ -26,7 +26,7 @@ function App() {
         isOpened={isOpened}
         onClose={() => setIsOpened(false)}
       />
-    </div>
+    </div> 
   );
 }
 
