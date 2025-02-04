@@ -9,16 +9,6 @@ export const fetchClients = async () => {
     return data;
 };
 
-export const deleteClient = async (clientId) => {
-    const response = await fetch(`${API_URL}/${clientId}`, {
-        method: 'DELETE',
-    });
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-    return response.json();
-};
-
 export const addClient = async (newClient) => {
     const response = await fetch(API_URL, {
         method: 'POST',
@@ -27,13 +17,13 @@ export const addClient = async (newClient) => {
         },
         body: JSON.stringify(newClient),
     });
+
     if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Failed to add client');
     }
     const data = await response.json();
     return data;
 };
-
 
 export const updateClient = async (clientData) => {
     const response = await fetch(`${API_URL}/${clientData.id}`, {
@@ -43,9 +33,22 @@ export const updateClient = async (clientData) => {
         },
         body: JSON.stringify(clientData),
     });
+
     if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Failed to update client');
     }
     const data = await response.json();
     return data;
+};
+
+export const deleteClient = async (clientId) => {
+    const response = await fetch(`${API_URL}/${clientId}`, {
+        method: 'DELETE',
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to delete client');
+    }
+
+    return response.json();
 };

@@ -5,7 +5,7 @@ function TableRow({ client, onUpdate, onDelete }) {
   const { isDeleting, deletingClient } = useDeleteClient();
   return (
     <tr>
-      <th>{id}</th>
+      {/* <th>{id}</th> */}
       <td>{name}</td>
       <td>{job}</td>
       <td>{favoriteColor}</td>

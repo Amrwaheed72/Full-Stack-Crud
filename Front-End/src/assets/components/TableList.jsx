@@ -15,7 +15,7 @@ function TableList({ onUpdate }) {
         {/* head */}
         <thead>
           <tr>
-            <th></th>
+            {/* <th></th> */}
             <th>Name</th>
             <th>Job</th>
             <th>Favorite Color</th>

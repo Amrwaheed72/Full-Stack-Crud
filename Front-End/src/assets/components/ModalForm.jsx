@@ -5,7 +5,7 @@ import { addClient, updateClient } from "../../Fetching/ClientApi";
 import toast from "react-hot-toast";
 
 function ModalForm({ isOpened, onClose, mode, initialData }) {
-  const { register, handleSubmit, reset, getValues } = useForm();
+  const { register, handleSubmit, reset } = useForm();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -23,8 +23,8 @@ function ModalForm({ isOpened, onClose, mode, initialData }) {
           name: "",
           email: "",
           job: "",
-          rate: 100.0, // Default rate
-          status: "Active", // Default status
+          rate: 100.0,
+          status: "Active",
         });
       }
     }
@@ -141,8 +141,8 @@ function ModalForm({ isOpened, onClose, mode, initialData }) {
             </div>
             <button
               onClick={(e) => {
-                e.preventDefault(); // Prevent form submission
-                onClose(); // Close the modal
+                e.preventDefault();
+                onClose();
               }}
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
             >
