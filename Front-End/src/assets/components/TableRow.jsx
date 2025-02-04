@@ -1,23 +1,24 @@
-import { useState } from "react";
+import { useDeleteClient } from "./useDeleteClient";
 
-function TableRow({ client, onUpdate }) {
-  const { id, name, job, favoriteColor, Rate, isActive } = client;
+function TableRow({ client, onUpdate, onDelete }) {
+  const { id, name, job, favoriteColor, rate, isactive } = client;
+  const { isDeleting, deletingClient } = useDeleteClient();
   return (
     <tr>
       <th>{id}</th>
       <td>{name}</td>
       <td>{job}</td>
       <td>{favoriteColor}</td>
-      <td>{Rate}</td>
+      <td>{rate}</td>
       <td>
         <button
           className={`${
-            isActive
+            isactive
               ? "btn btn-active btn-primary rounded-full w-24 "
               : "btn btn-outline btn-primary rounded-full w-24"
           }`}
         >
-          {isActive ? "Active" : "Inactive"}
+          {isactive ? "Active" : "Inactive"}
         </button>
       </td>
       <td>
@@ -29,7 +30,13 @@ function TableRow({ client, onUpdate }) {
         </button>
       </td>
       <td>
-        <button className="btn btn-error rounded-full bg">Delete</button>
+        <button
+          disabled={isDeleting}
+          onClick={() => deletingClient(id)}
+          className="btn btn-error rounded-full bg"
+        >
+          Delete
+        </button>
       </td>
     </tr>
   );

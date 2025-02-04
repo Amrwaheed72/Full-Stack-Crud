@@ -1,9 +1,14 @@
+import React from "react";
 import TableRow from "./TableRow";
-import {useClients} from "./useClients";
-
+import { useClients } from "./useClients";
+import Spinner from "./Spinner";
 
 function TableList({ onUpdate }) {
-  const {clients,ispending,error}=useClients();
+  const { clients, isPending, error } = useClients();
+
+  if (isPending) return <Spinner />;
+  if (error) return <div>Error: {error.message}</div>;
+
   return (
     <div className="overflow-x-auto mt-10">
       <table className="table">
@@ -16,11 +21,16 @@ function TableList({ onUpdate }) {
             <th>Favorite Color</th>
             <th>Rate</th>
             <th>Stats</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {useClients.map((client) => (
-            <TableRow onUpdate={onUpdate} client={client} key={client.id} />
+          {clients.map((client) => (
+            <TableRow
+              client={client}
+              key={client.id}
+              onUpdate={() => onUpdate(client)}
+            />
           ))}
         </tbody>
       </table>

@@ -1,26 +1,87 @@
-import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { addClient, updateClient } from "../../Fetching/ClientApi";
+import toast from "react-hot-toast";
 
-function ModalForm({ isOpened, onClose, mode, onSubmit }) {
-  const [rate, setRate] = useState(0);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [job, setJob] = useState("");
-  const [status, setStatus] = useState(false);
+function ModalForm({ isOpened, onClose, mode, initialData }) {
+  const { register, handleSubmit, reset, getValues } = useForm();
+  const queryClient = useQueryClient();
 
-  function handleStatus(e) {
-    setStatus(e.target.value === "Active");
-  }
-  function handleSubmit(e) {
-    e.preventDefault();
+  useEffect(() => {
+    if (isOpened) {
+      if (mode === "edit" && initialData) {
+        reset({
+          name: initialData.name,
+          email: initialData.email,
+          job: initialData.job,
+          rate: initialData.rate,
+          status: initialData.isactive ? "Active" : "Inactive", // Map boolean to string
+        });
+      } else {
+        reset({
+          name: "",
+          email: "",
+          job: "",
+          rate: 100.0, // Default rate
+          status: "Active", // Default status
+        });
+      }
+    }
+  }, [isOpened, mode, initialData, reset]);
+
+  const { isLoading: isCreating, mutate: addMutate } = useMutation({
+    mutationFn: addClient,
+    onSuccess: () => {
+      toast.success("Client Added Successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["clients"],
+      });
+      reset();
+      onClose();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const { isLoading: isUpdating, mutate: updateMutate } = useMutation({
+    mutationFn: updateClient,
+    onSuccess: () => {
+      toast.success("Client Updated Successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["clients"],
+      });
+      reset();
+      onClose();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const onSubmit = (data) => {
     const formData = {
-      rate,
-      name,
-      email,
-      job,
-      status,
+      ...data,
+      isactive: data.status === "Active",
     };
-    onsubmit = { formData };
-  }
+
+    if (mode === "add") {
+      addMutate(formData);
+    } else if (initialData) {
+      const initialFormData = {
+        name: initialData.name,
+        email: initialData.email,
+        job: initialData.job,
+        rate: initialData.rate,
+        status: initialData.isactive ? "Active" : "Inactive",
+      };
+
+      // Check if there are any changes
+      if (JSON.stringify(formData) !== JSON.stringify(initialFormData)) {
+        updateMutate({ ...formData, id: initialData.id });
+      } else {
+        toast.info("No changes made");
+        onClose();
+      }
+    }
+  };
 
   return (
     <div>
@@ -29,26 +90,23 @@ function ModalForm({ isOpened, onClose, mode, onSubmit }) {
           <h3 className="font-bold text-lg py-4">
             {mode === "edit" ? "Edit Client" : "Client Details"}
           </h3>
-          <form onSubmit={handleSubmit} method="dialog">
-            {/* if there is a button in form, it will close the modal */}
+          <form onSubmit={handleSubmit(onSubmit)} method="dialog">
             <label className="my-4 input input-bordered flex items-center gap-2">
               Name
               <input
                 type="text"
                 className="grow"
                 placeholder="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                {...register("name", { required: "This field is required" })}
               />
             </label>
             <label className="my-4 input input-bordered flex items-center gap-2">
               Email
               <input
-                type="text"
+                type="email"
                 className="grow"
                 placeholder="Email Address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email", { required: "This field is required" })}
               />
             </label>
             <label className="my-4 input input-bordered flex items-center gap-2">
@@ -57,8 +115,7 @@ function ModalForm({ isOpened, onClose, mode, onSubmit }) {
                 type="text"
                 className="grow"
                 placeholder="Your Job"
-                value={job}
-                onChange={(e) => setJob(e.target.value)}
+                {...register("job", { required: "This field is required" })}
               />
             </label>
             <div className="flex justify-between mb-4">
@@ -68,14 +125,12 @@ function ModalForm({ isOpened, onClose, mode, onSubmit }) {
                   type="number"
                   className="grow"
                   placeholder="Your Rate"
-                  value={rate}
-                  onChange={(e) => setRate(e.target.value)}
+                  {...register("rate", { required: "This field is required" })}
                 />
               </label>
               <select
-                value={status ? "Active" : "Inactive"}
                 className="mx-2 select select-bordered w-full max-w-xs"
-                onChange={handleStatus}
+                {...register("status", { required: "This field is required" })}
               >
                 <option disabled value="">
                   Select Your Status
@@ -85,12 +140,19 @@ function ModalForm({ isOpened, onClose, mode, onSubmit }) {
               </select>
             </div>
             <button
-              onClick={onClose}
+              onClick={(e) => {
+                e.preventDefault(); // Prevent form submission
+                onClose(); // Close the modal
+              }}
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
             >
               ✕
             </button>
-            <button type="submit" className="btn btn-success">
+            <button
+              disabled={isCreating || isUpdating}
+              type="submit"
+              className="btn btn-success"
+            >
               {mode === "edit" ? "Save Changes" : "Add Client"}
             </button>
           </form>
